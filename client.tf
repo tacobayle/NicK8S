@@ -68,17 +68,6 @@ resource "vsphere_virtual_machine" "client" {
      "while [ ! -f /tmp/cloudInitDone.log ]; do sleep 1; done"
    ]
   }
-
-  provisioner "file" {
-    source      = var.client["private_key_path"]
-    destination = "~/.ssh/${basename(var.client["private_key_path"])}"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod 600 ~/.ssh/${basename(var.client.private_key_path)}"
-    ]
-  }
 }
 
 

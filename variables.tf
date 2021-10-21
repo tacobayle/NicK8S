@@ -72,8 +72,6 @@ variable "client" {
     cpu = 2
     memory = 4096
     disk = 20
-    public_key_path = "~/.ssh/cloudKey.pub"
-    private_key_path = "~/.ssh/cloudKey"
     wait_for_guest_net_timeout = 2
     template_name = "ubuntu-focal-20.04-cloudimg-template"
     username = "ubuntu"
