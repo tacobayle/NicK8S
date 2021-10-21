@@ -61,7 +61,7 @@ resource "vsphere_virtual_machine" "client" {
    type        = "ssh"
    agent       = false
    user        = var.client.username
-   private_key = file(var.client["private_key_path"])
+   private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "remote-exec" {
@@ -107,7 +107,7 @@ resource "null_resource" "update_ip_to_client" {
     type        = "ssh"
     agent       = false
     user        = var.client.username
-    private_key = file(var.client["private_key_path"])
+    private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "remote-exec" {
