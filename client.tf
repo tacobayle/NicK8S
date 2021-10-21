@@ -3,7 +3,6 @@ data "template_file" "client_userdata" {
   vars = {
     pubkey        = chomp(tls_private_key.ssh.public_key_openssh)
     username = var.client["username"]
-    privateKey = var.client["private_key_path"]
     dns_servers = var.client.dns_servers
     ip_mgmt = var.client.ip_mgmt
     netplan_file_path = var.client.netplan_file_path
