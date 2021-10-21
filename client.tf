@@ -1,7 +1,7 @@
 data "template_file" "client_userdata" {
   template = file("${path.module}/userdata/client.userdata")
   vars = {
-    pubkey        = file(var.client["public_key_path"])
+    pubkey        = chomp(tls_private_key.ssh.public_key_openssh)
     username = var.client["username"]
     privateKey = var.client["private_key_path"]
     dns_servers = var.client.dns_servers
@@ -51,7 +51,7 @@ resource "vsphere_virtual_machine" "client" {
   vapp {
     properties = {
      hostname    = "client"
-     public-keys = file(var.client["public_key_path"])
+     public-keys = chomp(tls_private_key.ssh.public_key_openssh)
      user-data   = base64encode(data.template_file.client_userdata.rendered)
    }
  }
