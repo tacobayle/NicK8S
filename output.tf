@@ -13,7 +13,7 @@ output "jump_VM" {
 }
 
 output "client_VM" {
-  value = split("/", var.client.ip_mgmt)[0]
+  value = vsphere_virtual_machine.client.default_ip_address
 }
 
 output "Avi_controllers" {
