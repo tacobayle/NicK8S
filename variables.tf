@@ -82,11 +82,6 @@ variable "client" {
     wait_for_guest_net_timeout = 2
     template_name = "ubuntu-focal-20.04-cloudimg-template"
     username = "ubuntu"
-    netplan_file_path = "/etc/netplan/50-cloud-init.yaml"
-    ip_mgmt = "10.206.112.113/22" # needs to be changed if duplicate this repo
-    gw = "10.206.112.1"
-    ip_vip = "100.64.133.250" # needs to be changed if duplicate this repo
-    dns_servers = "10.206.8.130, 10.206.8.131"
   }
 }
 
