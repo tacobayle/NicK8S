@@ -73,7 +73,7 @@ resource "vsphere_virtual_machine" "jump" {
   }
 
   provisioner "file" {
-    source      = var.ssh_key.private_key_filename
+    source      = "~/.ssh/${var.ssh_key.private_key_filename}"
     destination = "~/.ssh/${var.ssh_key.private_key_filename}"
   }
 
