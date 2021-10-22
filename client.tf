@@ -56,7 +56,7 @@ resource "vsphere_virtual_machine" "client" {
  }
 
   connection {
-   host        = split("/", var.client.ip_mgmt)[0]
+    host        = vsphere_virtual_machine.client.default_ip_address
    type        = "ssh"
    agent       = false
    user        = var.client.username
@@ -91,7 +91,7 @@ resource "null_resource" "update_ip_to_client" {
   depends_on = [null_resource.add_nic_to_client]
 
   connection {
-    host        = split("/", var.client.ip_mgmt)[0]
+    host        = vsphere_virtual_machine.client.default_ip_address
     type        = "ssh"
     agent       = false
     user        = var.client.username
@@ -108,18 +108,24 @@ resource "null_resource" "update_ip_to_client" {
       "echo \"network:\" | sudo tee ${var.client.netplan_file_path}",
       "echo \"    ethernets:\" | sudo tee -a ${var.client.netplan_file_path}",
       "echo \"        $ifaceFirstName:\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            dhcp4: false\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            addresses: [${var.client.ip_mgmt}]\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            gateway4: ${var.client.gw}\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            match:\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"                macaddress: $macFirst\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            set-name: $ifaceFirstName\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            dhcp4: false\" | sudo tee -a ${var.client.netplan_file_path}",
+      "echo \"            dhcp4: true\" | sudo tee -a ${var.client.netplan_file_path}",
+      "echo \"            dhcp4-overrides:\" | sudo tee -a ${var.client.netplan_file_path}",
+      "echo \"              use-dns: false\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            addresses: [${var.client.ip_mgmt}]\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            gateway4: ${var.client.gw}\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            match:\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"                macaddress: $macFirst\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            set-name: $ifaceFirstName\" | sudo tee -a ${var.client.netplan_file_path}",
       "echo \"        $ifaceLastName:\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            dhcp4: false\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            addresses: [${var.client.ip_vip}/${split("/", var.vmw.network_vip.cidr)[1]}]\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            match:\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"                macaddress: $macLast\" | sudo tee -a ${var.client.netplan_file_path}",
-      "echo \"            set-name: $ifaceLastName\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            dhcp4: false\" | sudo tee -a ${var.client.netplan_file_path}",
+      "echo \"            dhcp4: true\" | sudo tee -a ${var.client.netplan_file_path}",
+      "echo \"            dhcp4-overrides:\" | sudo tee -a ${var.client.netplan_file_path}",
+      "echo \"              use-dns: false\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            addresses: [${var.client.ip_vip}/${split("/", var.vmw.network_vip.cidr)[1]}]\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            match:\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"                macaddress: $macLast\" | sudo tee -a ${var.client.netplan_file_path}",
+//      "echo \"            set-name: $ifaceLastName\" | sudo tee -a ${var.client.netplan_file_path}",
       "echo \"            nameservers:\" | sudo tee -a ${var.client.netplan_file_path}",
       "echo \"              addresses: [${cidrhost(var.vmw.network_vip.cidr, var.vmw.network_vip.ipStartPool)}]\" | sudo tee -a ${var.client.netplan_file_path}",
       "echo \"    version: 2\" | sudo tee -a ${var.client.netplan_file_path}",
