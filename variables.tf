@@ -82,6 +82,7 @@ variable "client" {
     wait_for_guest_net_timeout = 2
     template_name = "ubuntu-focal-20.04-cloudimg-template"
     username = "ubuntu"
+    netplan_file_path = "/etc/netplan/50-cloud-init.yaml"
   }
 }
 
