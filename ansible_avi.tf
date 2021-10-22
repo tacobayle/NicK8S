@@ -20,7 +20,7 @@ resource "null_resource" "ansible_avi" {
     type = "ssh"
     agent = false
     user = var.jump.username
-    private_key = file(var.jump.private_key_path)
+    private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "file" {

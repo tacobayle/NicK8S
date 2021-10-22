@@ -16,6 +16,17 @@ variable "docker_registry_email" {}
 #
 # Other Variables
 #
+
+variable "ssh_key" {
+  type = map
+  default = {
+    algorithm            = "RSA"
+    rsa_bits             = "4096"
+    private_key_filename = "ssh.pem"
+    file_permission      = "0600"
+  }
+}
+
 variable "vcenter" {
   type = map
   default = {
@@ -36,7 +47,6 @@ variable "controller" {
     cluster = false
     version = "21.1.1-9045"
     wait_for_guest_net_timeout = 4
-    private_key_path = "~/.ssh/cloudKey"
     environment = "VMWARE"
     dns =  ["10.206.8.130", "10.206.8.131"]
     ntp = ["95.81.173.155", "188.165.236.162"]
@@ -45,7 +55,6 @@ variable "controller" {
     tenant_access_to_provider_se = "true"
     tenant_vrf = "false"
     aviCredsJsonFile = "~/.avicreds.json"
-    public_key_path = "~/.ssh/cloudKey.pub"
   }
 }
 
@@ -56,8 +65,6 @@ variable "jump" {
     cpu = 2
     memory = 4096
     disk = 20
-    public_key_path = "~/.ssh/cloudKey.pub"
-    private_key_path = "~/.ssh/cloudKey"
     wait_for_guest_net_timeout = 2
     template_name = "ubuntu-focal-20.04-cloudimg-template"
     avisdkVersion = "21.1.1"

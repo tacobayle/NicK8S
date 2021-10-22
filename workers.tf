@@ -3,7 +3,7 @@ data "template_file" "worker_userdata" {
   template = file("${path.module}/userdata/worker.userdata")
   vars = {
     netplanFile  = var.vmw.kubernetes.clusters[floor(count.index / var.vmw.kubernetes.workers.count)].worker.netplanFile
-    pubkey       = file(var.jump.public_key_path)
+    pubkey       = chomp(tls_private_key.ssh.public_key_openssh)
     dockerVersion = var.vmw.kubernetes.clusters[floor(count.index / var.vmw.kubernetes.workers.count)].docker.version
     username = var.vmw.kubernetes.clusters[floor(count.index / var.vmw.kubernetes.workers.count)].username
     docker_registry_username = var.docker_registry_username
@@ -62,7 +62,7 @@ resource "vsphere_virtual_machine" "worker" {
   vapp {
     properties = {
       hostname    = "${var.vmw.kubernetes.clusters[floor(count.index / var.vmw.kubernetes.workers.count)].name}-worker-${count.index - floor(count.index / var.vmw.kubernetes.workers.count) * var.vmw.kubernetes.workers.count + 1 }"
-      public-keys = file(var.jump.public_key_path)
+      public-keys = chomp(tls_private_key.ssh.public_key_openssh)
       user-data   = base64encode(data.template_file.worker_userdata[count.index].rendered)
     }
   }
@@ -72,7 +72,7 @@ resource "vsphere_virtual_machine" "worker" {
     type        = "ssh"
     agent       = false
     user        = var.vmw.kubernetes.clusters[floor(count.index / var.vmw.kubernetes.workers.count)].username
-    private_key = file(var.jump.private_key_path)
+    private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "remote-exec" {

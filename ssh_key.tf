@@ -1,11 +1,11 @@
 
 resource "tls_private_key" "ssh" {
-  algorithm = "RSA"
-  rsa_bits  = "4096"
+  algorithm = var.ssh_key.algorithm
+  rsa_bits  = var.ssh_key.rsa_bits
 }
 
 resource "local_file" "private_key" {
   content         = tls_private_key.ssh.private_key_pem
-  filename        = "ssh.pem"
-  file_permission = "0600"
+  filename        = var.ssh_key.private_key_filename
+  file_permission = var.ssh_key.file_permission
 }

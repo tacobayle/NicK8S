@@ -35,7 +35,7 @@ resource "vsphere_virtual_machine" "controller" {
 
   vapp {
     properties = {
-      sysadmin-public-key = file(var.controller.public_key_path)
+      sysadmin-public-key = chomp(tls_private_key.ssh.public_key_openssh)
     }
   }
 }

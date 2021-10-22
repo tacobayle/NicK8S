@@ -38,14 +38,14 @@ resource "null_resource" "ansible_bootstrap_cluster" {
     type = "ssh"
     agent = false
     user = var.jump.username
-    private_key = file(var.jump.private_key_path)
+    private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "remote-exec" {
     inline = [
       "git clone ${var.ansible.k8sInstallUrl} --branch ${var.ansible.k8sInstallTag} ansible_cluster_${count.index}",
       "echo '[defaults]' | tee ansible_cluster_${count.index}/ansible.cfg",
-      "echo 'private_key_file = /home/${var.jump.username}/.ssh/${basename(var.jump.private_key_path)}' | tee -a ansible_cluster_${count.index}/ansible.cfg",
+      "echo 'private_key_file = /home/${var.jump.username}/.ssh/${var.ssh_key.private_key_filename}' | tee -a ansible_cluster_${count.index}/ansible.cfg",
       "echo 'host_key_checking = False' | tee -a ansible_cluster_${count.index}/ansible.cfg",
       "echo 'host_key_auto_add = True' | tee -a ansible_cluster_${count.index}/ansible.cfg"
     ]

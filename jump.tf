@@ -1,14 +1,15 @@
 data "template_file" "jumpbox_userdata" {
+  depends_on = [local_file.private_key]
   template = file("${path.module}/userdata/jump.userdata")
   vars = {
-    pubkey        = file(var.jump["public_key_path"])
+    pubkey        = chomp(tls_private_key.ssh.public_key_openssh)
     avisdkVersion = var.jump["avisdkVersion"]
     ansibleVersion = var.ansible["version"]
     vsphere_user  = var.vsphere_user
     vsphere_password = var.vsphere_password
     vsphere_server = var.vsphere_server
     username = var.jump["username"]
-    privateKey = var.jump["private_key_path"]
+    privateKey = var.ssh_key.private_key_filename
   }
 }
 
@@ -52,7 +53,7 @@ resource "vsphere_virtual_machine" "jump" {
   vapp {
     properties = {
      hostname    = "jump"
-     public-keys = file(var.jump["public_key_path"])
+     public-keys = chomp(tls_private_key.ssh.public_key_openssh)
      user-data   = base64encode(data.template_file.jumpbox_userdata.rendered)
    }
  }
@@ -62,7 +63,7 @@ resource "vsphere_virtual_machine" "jump" {
    type        = "ssh"
    agent       = false
    user        = var.jump.username
-   private_key = file(var.jump["private_key_path"])
+   private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "remote-exec" {
@@ -72,13 +73,13 @@ resource "vsphere_virtual_machine" "jump" {
   }
 
   provisioner "file" {
-    source      = var.jump["private_key_path"]
-    destination = "~/.ssh/${basename(var.jump["private_key_path"])}"
+    source      = var.ssh_key.private_key_filename
+    destination = "~/.ssh/${var.ssh_key.private_key_filename}"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 600 ~/.ssh/${basename(var.jump.private_key_path)}"
+      "chmod 600 ~/.ssh/${var.ssh_key.private_key_filename}"
     ]
   }
 }
@@ -108,7 +109,7 @@ resource "vsphere_virtual_machine" "jump" {
 //    type        = "ssh"
 //    agent       = false
 //    user        = var.jump.username
-//    private_key = file(var.jump["private_key_path"])
+//    private_key = file(var.ssh_key.private_key_filename)
 //  }
 //
 //  provisioner "remote-exec" {

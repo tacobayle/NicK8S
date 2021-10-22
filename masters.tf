@@ -3,7 +3,7 @@ data "template_file" "master_userdata" {
   template = file("${path.module}/userdata/master.userdata")
   vars = {
     netplanFile  = var.vmw.kubernetes.clusters[count.index].master.netplanFile
-    pubkey       = file(var.jump.public_key_path)
+    pubkey       = chomp(tls_private_key.ssh.public_key_openssh)
     dockerVersion = var.vmw.kubernetes.clusters[count.index].docker.version
     username = var.vmw.kubernetes.clusters[count.index].username
     docker_registry_username = var.docker_registry_username
@@ -63,7 +63,7 @@ resource "vsphere_virtual_machine" "master" {
   vapp {
     properties = {
       hostname    = "${var.vmw.kubernetes.clusters[count.index].name}-master"
-      public-keys = file(var.jump.public_key_path)
+      public-keys = chomp(tls_private_key.ssh.public_key_openssh)
       user-data   = base64encode(data.template_file.master_userdata[count.index].rendered)
     }
   }
@@ -73,7 +73,7 @@ resource "vsphere_virtual_machine" "master" {
     type        = "ssh"
     agent       = false
     user        = var.vmw.kubernetes.clusters[count.index].username
-    private_key = file(var.jump.private_key_path)
+    private_key = tls_private_key.ssh.private_key_pem
   }
 
   provisioner "remote-exec" {
