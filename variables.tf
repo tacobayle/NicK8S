@@ -75,7 +75,7 @@ variable "jump" {
 variable "client" {
   type = map
   default = {
-    name = "client-nic" # needs to be changed if duplicate this repo
+    name = "client"
     cpu = 2
     memory = 4096
     disk = 20

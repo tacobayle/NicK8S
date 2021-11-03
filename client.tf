@@ -12,7 +12,7 @@ data "vsphere_virtual_machine" "client" {
 }
 
 resource "vsphere_virtual_machine" "client" {
-  name             = var.client["name"]
+  name             = "${var.vcenter.folder}-${var.client.name}"
   datastore_id     = data.vsphere_datastore.datastore.id
   resource_pool_id = data.vsphere_resource_pool.pool.id
   folder           = vsphere_folder.folder.path
@@ -78,7 +78,7 @@ resource "null_resource" "add_nic_to_client" {
       export GOVC_URL=${var.vsphere_server}
       export GOVC_CLUSTER=${var.vcenter.cluster}
       export GOVC_INSECURE=true
-      govc vm.network.add -vm ${var.client["name"]} -net ${var.vmw.network_vip.name}
+      govc vm.network.add -vm "${var.vcenter.folder}-${var.client.name}" -net ${var.vmw.network_vip.name}
     EOT
   }
 }
